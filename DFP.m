@@ -1,10 +1,11 @@
-function ReturnValue = DFP(functname,dvar0,niter,tol,lowbound,intvl,ntrials)
+function ReturnValue = DFP(functname,dvar0, bounds,niter,tol,lowbound,intvl,ntrials)
 clf
 e3 = 1.0e-04;  
 nvar = length(dvar0);
 if (nvar == 2)
-	x1 = 0:0.1:5;
-	x2 = 0:0.1:5;
+	x1 = bounds(1):0.1:bounds(2);
+	x2 = bounds(1):0.1:bounds(2);
+
 	x1len = length(x1);
 	x2len = length(x2);
     fun = zeros(x1len, x2len);
