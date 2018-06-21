@@ -1,4 +1,4 @@
-function ReturnValue = DFP(functname,dvar0, bounds,niter,tol,lowbound,intvl,ntrials)
+function [ReturnValue, goldenValues] = DFP(functname,dvar0, bounds,niter,tol,lowbound,intvl,ntrials)
 clf
 e3 = 1.0e-04;  
 nvar = length(dvar0);
@@ -75,7 +75,6 @@ len=length(as);
 designvar=xs(length(as),:);
 mainIterations
 goldenIterations
-goldenValues
 designvar
 fs(len)
 ReturnValue = [designvar fs(len)];
