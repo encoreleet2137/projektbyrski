@@ -21,67 +21,48 @@ if (nvar == 2)
    fname = strrep(functname,'_','-');
 	title(strcat('Davidon-Fletcher-Powell (DFP): ',fname))
 end
-
-%*********************
-%  Numerical Procedure
-%*********************
-% design vector, alpha , and function value is stored
 xs(1,:) = dvar0;
 x = dvar0;
 Lc = 'r';
-fs(1) = feval(functname,x); % value of function at start
-as(1)=0;
-grad = (gradfunction(functname,x)); % steepest descent
-
-A = eye(nvar);  % initial metric
-% uses MATLAB built in identity matrix function
-
+fs = zeros(niter);
+fs(1) = feval(functname,x);
+grad = (gradfunction(functname,x));
+A = eye(nvar);
 goldenIterations = 0;
+goldenValues = [];
 mainIterations = 0;
+convg = zeros(niter);
 convg(1)=grad*grad';
 for i = 1:niter-1
    mainIterations = mainIterations + 1;
    fprintf('iteration number:  '),disp(i)
    s = (-A*grad')'; 
-   [output, nIters] = GoldSection_nVar(functname,tol,x,s,lowbound,intvl,ntrials);
+   [output, nIters, gValues] = GoldSection_nVar(functname,tol,x,s,lowbound,intvl,ntrials);
    goldenIterations = goldenIterations + nIters;
+   goldenValues = [goldenValues; gValues];
    as(i+1) = output(1);
    fs(i+1) = output(2);
    for k = 1:nvar
       xs(i+1,k)=output(2+k);
       x(k)=output(2+k);
    end
-   grad= (gradfunction(functname,x)) ;% steepest descent
-   
+   grad= (gradfunction(functname,x));
    convg(i+1)=grad*grad';
-   % print convergence value
    fprintf('gradient length squared:  '),disp(convg(i+1));
 	fprintf('objective function value:  '),disp(fs(i+1));
-   %***********
-   % draw lines
-   %************
-   
    if (nvar == 2)
-      line([xs(i,1) xs(i+1,1)],[xs(i,2) xs(i+1,2)],'LineWidth',2, ...
-         'Color',Lc)
-      itr = int2str(i);
-      x1loc = 0.5*(xs(i,1)+xs(i+1,1));
-      x2loc = 0.5*(xs(i,2)+xs(i+1,2));
-      %text(x1loc,x2loc,itr); 
-      % writes iteration number on the line
-   if strcmp(Lc,'r') 
-         Lc = 'k';
-   else
-         Lc = 'r';
-   end
-        
-    pause(1)  
-   %***********************
-   % finished drawing lines
-   %***********************
-end
+       line([xs(i,1) xs(i+1,1)],[xs(i,2) xs(i+1,2)],'LineWidth',2,'Color',Lc)
+       if strcmp(Lc,'r') 
+             Lc = 'k';
+       else
+             Lc = 'r';
+       end
+       pause(1)  
+    end
 
-if(convg(i+1)<= e3) break; end;
+if(convg(i+1)<= e3) 
+    break;
+end;
 delx = (x - xs(i,:))';
 Y = (grad -gradfunction(functname,xs(i,:)))';
 Z = A*Y;
@@ -93,6 +74,7 @@ len=length(as);
 designvar=xs(length(as),:);
 mainIterations
 goldenIterations
+goldenValues
 designvar
 fs(len)
 ReturnValue = [designvar fs(len)];
