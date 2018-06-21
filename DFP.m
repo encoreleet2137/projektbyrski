@@ -25,7 +25,6 @@ end
 xs(1,:) = dvar0;
 x = dvar0;
 Lc = 'r';
-fs = zeros(niter);
 fs(1) = feval(functname,x);
 grad = (gradfunction(functname,x));
 A = eye(nvar);
@@ -40,7 +39,18 @@ for i = 1:niter-1
    s = (-A*grad')'; 
    [output, nIters, gValues] = GoldSection_nVar(functname,tol,x,s,lowbound,intvl,ntrials);
    goldenIterations = goldenIterations + nIters;
-   goldenValues = [goldenValues; gValues];
+   if size(gValues, 2) > length(dvar0)+1
+       goldenValues = [goldenValues; gValues(2:end)];
+   else
+      goldenValues = [goldenValues; gValues]; 
+   end
+   
+   if sum(sum(isnan(goldenValues))) > 0
+       fprintf('Brak lokalnego minimum!');
+       ReturnValue = [];
+       return;
+   end
+   
    as(i+1) = output(1);
    fs(i+1) = output(2);
    for k = 1:nvar
@@ -73,8 +83,5 @@ A = A + B + C;
 end
 len=length(as);
 designvar=xs(length(as),:);
-mainIterations
-goldenIterations
-designvar
 fs(len)
 ReturnValue = [designvar fs(len)];
