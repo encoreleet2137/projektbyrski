@@ -15,7 +15,7 @@ if (nvar == 2)
             fun(j,i) = feval(functname,x1x2);
         end
     end
-	contour(x1,x2,fun,[3.1 3.25 3.5 4 6 10 15 20 25],'k');
+	contour(x1,x2,fun,[-10 -5 -2 -1 0 1 2 5 10],'k');
 	grid
 	xlabel('x_1')
    ylabel('x_2')
